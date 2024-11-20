@@ -1,8 +1,6 @@
 <template>
     <div class="email-list">
 
-
-
         <div v-if="loading" class="loader-container">
             <div class="loader"></div>
         </div>
@@ -10,10 +8,7 @@
         <!-- Email List -->
         <div v-else>
             <!-- Searchbar -->
-
-
-
-            <div class="d-flex justify-content-between w-100">
+            <div class="d-flex justify-content-between w-100 display">
                 <div class="d-flex gap-5 p-4 mt-2">
             
                     <EnvelopeOpenIcon class="h-5 w-5" @click="filterByReadStatus" />
@@ -45,14 +40,14 @@
 
             <!-- Email Items -->
             <div v-for="email in filteredEmails" :key="email.id"
-                class="email-item ms-3 d-flex justify-content-between align-items-center p-3 border-bottom"
+                class="email-item ms-3 d-flex justify-content-between align-items-center p-3 border-bottom display"
                 @click="$router.push({ name: 'EmailDetails', params: { id: email.id } })">
                 <div class="d-flex">
                     <div class="d-flex gap-2">
                         <input type="checkbox">
-                        <StarIcon class="h-5 w-5" @click.stop="markAsStarred(email.id)"
+                        <StarIcon class="h-5 w-5 starIcon" @click.stop="markAsStarred(email.id)"
                             :class="email.is_starred ? 'text-warning' : ''"
-                            style="margin-top: 21px; margin-left: 10px;" />
+                             />
                     </div>
 
                     <div class="email-info ms-5">
@@ -310,5 +305,32 @@ export default {
 
 .w-5 {
     width: 1.25rem;
+}
+.starIcon{
+    margin-top: 21px;
+    margin-left: 10px;
+}
+
+
+/* Sidebar visibility for devices with widths between 500px and 698px */
+@media (max-width: 698px) and (min-width: 500px) {
+  .display {
+    display: flex;
+    flex-direction: column;
+  }
+  .starIcon {
+    margin-top: 20px;
+  }
+}
+
+/* Sidebar visibility for small screens */
+@media (max-width: 500px ) {
+  .display{
+    display: flex;
+    flex-direction: column;
+  }
+  .starIcon{
+    margin-top: 37px;
+  }
 }
 </style>

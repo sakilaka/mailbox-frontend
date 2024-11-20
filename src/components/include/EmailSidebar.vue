@@ -1,14 +1,11 @@
 <template>
     <div class="sidebar">
-        <button style="background-color: #0CAF60;" class="btn btn-success w-100 mb-3" @click="$router.push('/compose')">Compose</button>
+        <button class="compose-button w-100 mb-3"
+            @click="$router.push('/compose')">Compose</button>
 
         <ul class="nav flex-column">
             <li class="nav-item bg" v-for="link in links" :key="link.name">
-                <router-link 
-                    :to="link.path" 
-                    class="nav-link"
-                    active-class="active-link" 
-                >
+                <router-link :to="link.path" class="nav-link" active-class="active-link">
                     <i :class="link.icon"></i> {{ link.name }}
                 </router-link>
             </li>
@@ -24,7 +21,7 @@ export default {
                 { name: "Inbox", path: "/profile", icon: "bi bi-inbox-fill" },
                 { name: "Starred", path: "/starred", icon: "bi bi-star-fill" },
                 { name: "Sent", path: "/sent", icon: "bi bi-send-fill" },
-                // { name: "Draft", path: "/draft", icon: "bi bi-file-earmark-text" },
+                { name: "Draft", path: "/draft", icon: "bi bi-file-earmark-text" },
                 // { name: "Spam", path: "/spam", icon: "bi bi-exclamation-circle" },
                 { name: "Trash", path: "/trash", icon: "bi bi-trash-fill" },
                 { name: "Archive", path: "/archive", icon: "bi bi-archive-fill" },
@@ -55,10 +52,19 @@ export default {
 .active-link {
     background-color: #0CAF60;
     border-radius: 5px;
-    color: #fff; /* Adjust if you want white text on active/hover links */
+    color: #fff;
+    /* Adjust if you want white text on active/hover links */
 }
 
 .nav-link i {
     margin-right: 10px;
+}
+
+.compose-button {
+    background-color: rgb(12, 175, 96);
+    border: none;
+    padding: 10px 1px;
+    border-radius: 5px;
+    color: white;
 }
 </style>

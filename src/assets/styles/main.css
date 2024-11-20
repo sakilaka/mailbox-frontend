@@ -39,7 +39,6 @@ a {
   justify-content: center;
   width: 100%;
   min-height: 100vh; /* Use full viewport height */
-  min-width: 100vh; /* Use full viewport height */
   padding: 20px;
   background: linear-gradient(to right, white 50%, #0CAF60 50%);
 }

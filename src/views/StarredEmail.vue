@@ -16,7 +16,7 @@
         <hr> -->
 
         <div v-for="email in emails" :key="email.id"
-            class="email-item ms-3 d-flex justify-content-between align-items-center p-3 border-bottom"
+            class="email-item ms-3 d-flex justify-content-between align-items-center p-3 border-bottom display"
             @click="$router.push({ name: 'EmailDetails', params: { id: email.id } })">
             <div class="d-flex">
                 <div class="d-flex gap-2">
@@ -159,5 +159,12 @@ export default {
 
 .w-5 {
     width: 1.25rem;
+}
+
+@media (max-width: 698px) {
+  .display{
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>

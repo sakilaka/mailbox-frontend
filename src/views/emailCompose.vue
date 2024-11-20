@@ -8,8 +8,12 @@
                     <option v-for="userEmail in userEmails" :key="userEmail" :value="userEmail">
                         {{ userEmail }}
                     </option>
+                    <option v-if="!userEmails.includes(email.from)" :value="email.from">
+                        {{ email.from }} (not in list)
+                    </option>
                 </select>
             </div>
+
             <div class="form-group">
                 <label>To:</label>
                 <input type="email" v-model="email.to" required />
@@ -22,10 +26,6 @@
                 <label>Subject:</label>
                 <input type="text" v-model="email.subject" required />
             </div>
-            <!-- <div class="form-group">
-                <label>Message:</label>
-                <textarea v-model="email.message" required></textarea>
-            </div> -->
             <div class="form-group">
                 <label>Message:</label>
                 <ckeditor :editor="editor" v-model="email.message" :config="editorConfig" class="custom-editor">
@@ -36,7 +36,7 @@
                 <label>Attachment:</label>
                 <input type="file" @change="handleAttachment" multiple />
             </div>
-            
+
             <div v-if="email.attachments.length > 0">
                 <ul>
                     <li v-for="(file, index) in email.attachments" :key="index">
@@ -44,6 +44,7 @@
                     </li>
                 </ul>
             </div>
+
 
             <div class="text-end">
                 <button type="submit" :disabled="isSending">
@@ -82,16 +83,74 @@ export default {
                 attachments: []
             },
             userEmails: [],
-            isSending: false
+            isSending: false,
+            draftTimer: null,
+            isDraftSaved: false,
         };
+    },
+    // watch: {
+    //     email: {
+    //         deep: true,
+    //         handler() {
+    //             this.startAutoSave();
+    //         },
+    //     },
+    // },
+    beforeRouteLeave(to, from, next) {
+        if (!this.isDraftSaved) {
+            this.saveDraft().then(() => {
+                next();
+            });
+        } else {
+            next();
+        }
     },
     components: {
         Ckeditor,
     },
 
     async created() {
-        await this.getUserEmails();
+        const draftData = this.$route.query;
+
+        if (draftData && Object.keys(draftData).length > 0) {
+            this.email = {
+                from: draftData.from || '',
+                to: draftData.to || '',
+                cc: draftData.cc || '',
+                subject: draftData.subject || '',
+                message: draftData.message || '',
+                attachments: [] // Placeholder for attachments
+            };
+
+            // Fetch or populate attachments if they exist
+            if (draftData.attachments && draftData.attachments.length > 0) {
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await axios.get(`${apiUrl}drafts/${draftData.id}/attachments`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    // Set the attachments to email.attachments
+                    this.email.attachments = response.data.attachments.map(file => ({
+                        name: file.name,
+                        url: file.url
+                    }));
+                } catch (error) {
+                    console.error('Failed to fetch attachments:', error);
+                }
+            }
+        } else {
+            await this.getUserEmails();
+        }
     },
+
+
+    mounted() {
+        this.getUserEmails();
+    },
+
 
     methods: {
         async getUserEmails() {
@@ -109,6 +168,54 @@ export default {
 
         handleAttachment(event) {
             this.email.attachments = Array.from(event.target.files);
+            // this.startAutoSave();
+        },
+
+        // startAutoSave() {
+        //     clearTimeout(this.draftTimer);
+
+        //     this.draftTimer = setTimeout(() => {
+        //         this.saveDraft();
+        //     }, 5000);
+        // },
+
+        async saveDraft() {
+            if (this.isDraftSaved) return; // Don't save if already sent or saved
+
+            const { message, attachments, subject, to, from, cc } = this.email;
+
+            if (!message && attachments.length === 0 && !subject && !to) return;
+
+            let formData = new FormData();
+            formData.append('message', message);
+            formData.append('subject', subject);
+            formData.append('to', to);
+            formData.append('from', from);
+            formData.append('cc', cc);
+
+            attachments.forEach((file) => {
+                formData.append('attachments[]', file);
+            });
+
+            try {
+                const token = localStorage.getItem('token');
+                await axios.post(`${apiUrl}drafts`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                console.log('Draft saved successfully');
+            } catch (error) {
+                console.error('Failed to save draft:', error);
+            }
+        },
+
+
+
+        beforeDestroy() {
+            this.saveDraft(); // Save draft when leaving the page
         },
 
         async sendEmail() {
@@ -122,6 +229,7 @@ export default {
             formData.append('message', this.email.message);
 
             // Add multiple attachments
+
             this.email.attachments.forEach((file) => {
                 formData.append('attachments[]', file);
             });
@@ -134,6 +242,7 @@ export default {
                     }
                 });
                 toastr.success('Email sent successfully!');
+                this.isDraftSaved = true;
                 this.$router.push('/profile');
             } catch (error) {
                 console.error('Failed to send email:', error);
@@ -143,6 +252,7 @@ export default {
             }
         }
     }
+
 };
 </script>
 

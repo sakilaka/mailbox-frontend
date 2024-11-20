@@ -2,20 +2,16 @@
   <div class="header">
     <!-- Logo Section -->
     <div class="logo">
-      <img
-        :src="HeaderLogo"
-        alt="Logo"
-      />
+      <router-link to="/profile">
+        <img :src="HeaderLogo" alt="Logo" />
+      </router-link>
     </div>
 
     <!-- Avatar Section -->
     <div class="avatar-container">
-      <img
-        class="avatar"
+      <img class="avatar"
         src="https://thumbs.dreamstime.com/z/businessman-avatar-image-beard-hairstyle-male-profile-vector-illustration-178545831.jpg"
-        alt="User Avatar"
-        @click="toggleDropdown"
-      />
+        alt="User Avatar" @click="toggleDropdown" />
       <div v-if="showDropdown" class="dropdown">
         <button @click="logout">Logout</button>
         <!-- <button @click="viewProfile">Your Profile</button> -->
@@ -24,11 +20,7 @@
   </div>
 
   <!-- Optional Overlay for Outside Click -->
-  <div
-    v-if="showDropdown"
-    class="dropdown-overlay"
-    @click="toggleDropdown"
-  ></div>
+  <div v-if="showDropdown" class="dropdown-overlay" @click="toggleDropdown"></div>
 </template>
 
 
@@ -44,7 +36,7 @@ export default {
       HeaderLogo
     };
   },
- 
+
   created() {
     this.checkLoginStatus();
   },
@@ -68,7 +60,6 @@ export default {
 </script>
 
 <style scoped>
-
 .header {
   background-color: white;
   display: flex;
@@ -99,7 +90,8 @@ export default {
 
 .dropdown {
   position: absolute;
-  top: 50px; /* Adjust the dropdown to appear below the avatar */
+  top: 50px;
+  /* Adjust the dropdown to appear below the avatar */
   right: 0;
   background-color: white;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -107,7 +99,8 @@ export default {
   width: 150px;
   padding: 10px 0;
   visibility: visible;
-  z-index: 1001; /* Make sure the dropdown is above other elements */
+  z-index: 1001;
+  /* Make sure the dropdown is above other elements */
 }
 
 .dropdown button {
@@ -132,8 +125,10 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.1); /* Slight dark background */
-  z-index: 1000; /* Should be lower than dropdown */
+  background: rgba(0, 0, 0, 0.1);
+  /* Slight dark background */
+  z-index: 1000;
+  /* Should be lower than dropdown */
   cursor: pointer;
 }
 </style>

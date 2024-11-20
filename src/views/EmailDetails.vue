@@ -25,7 +25,7 @@
         <div>
             <h4 style="margin-left: 95px;" class="mb-4">{{ email.subject }}</h4>
 
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between display">
                 <div class="d-flex mb-2">
                     <img style="width: 70px; height: 70px;"
                         src="https://thumbs.dreamstime.com/z/businessman-avatar-image-beard-hairstyle-male-profile-vector-illustration-178545831.jpg"
@@ -36,7 +36,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex gap-2" style="margin-right: 80px;">
+                <div class="d-flex gap-2 time" style="margin-right: 80px;">
                     <p class="">{{ formatTime(email.created_at) }}</p>
                     <StarIcon style="height: 20px; width:20px;" class="h-5 w-5 ms-2" />
                 </div>
@@ -428,5 +428,18 @@ svg {
 
 svg:hover {
     color: #ccc;
+}
+
+@media (max-width: 698px) {
+  .display{
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+  }
+  .time{
+    font-size: 12px;
+    margin-left: 95px;
+    margin-top: -10px;
+  }
 }
 </style>
