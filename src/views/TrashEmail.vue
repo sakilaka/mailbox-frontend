@@ -34,8 +34,7 @@
                     <EyeIcon class="h-5 w-5 mx-2"
                         @click="$router.push({ name: 'EmailDetails', params: { id: email.id } })" />
                     <TrashIcon class="h-5 w-5 mx-2" @click.stop="deleteEmail(email.id)" />
-                    <RestoreIcon class="h-5 w-5 mx-2" @click.stop="restoreEmail(email.id)" />
-                    <!-- <button @click.stop="restoreEmail(email.id)" type="">Restore</button> -->
+                    <ArrowUturnLeftIcon class="h-5 w-5 mx-2" @click.stop="restoreEmail(email.id)" />
                 </div>
             </div>
         </div>
@@ -46,14 +45,14 @@
 <script>
 import axios from 'axios';
 import { apiUrl } from '@/globalVariable';
-import { EyeIcon, TrashIcon, RestoreIcon } from '@heroicons/vue/24/outline';
+import { EyeIcon, TrashIcon, ArrowUturnLeftIcon } from '@heroicons/vue/24/outline';
 import toastr from 'toastr';
 
 export default {
     components: {
         EyeIcon,
         TrashIcon,
-        RestoreIcon
+        ArrowUturnLeftIcon
     },
     data() {
         return {
