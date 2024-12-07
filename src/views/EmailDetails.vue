@@ -10,13 +10,20 @@
                 </svg>
             </button>
 
-            <EnvelopeIcon style="height: 20px; width:20px;" class="h-5 w-5 mt-2 mx-2 "
-                :class="email.is_read ? 'text-warning' : ''" @click.stop="markAsRead(email.id)" />
+            <span title="Mark As read">
+                <EnvelopeIcon style="height: 20px; width:20px;" class="h-5 w-5 mt-2 mx-2 "
+                    :class="email.is_read ? 'text-warning' : ''" @click.stop="markAsRead(email.id)" />
+            </span>
 
-            <TrashIcon style="height: 20px; width:20px;" class="h-5 w-5 mt-2 mx-2"
-                @click.stop="moveToTrash(email.id)" />
-            <ArchiveBoxIcon style="height: 20px; width:20px;" class="h-5 w-5 mt-2 mx-2"
-                @click.stop="moveToArchive(email.id)" />
+            <span title="Move to trash">
+                <TrashIcon style="height: 20px; width:20px;" class="h-5 w-5 mt-2 mx-2"
+                    @click.stop="moveToTrash(email.id)" />
+            </span>
+
+            <span title="Move to Archive">
+                <ArchiveBoxIcon style="height: 20px; width:20px;" class="h-5 w-5 mt-2 mx-2"
+                    @click.stop="moveToArchive(email.id)" />
+            </span>
 
         </div>
 
@@ -44,7 +51,10 @@
 
             <div class="container mx-auto my-3">
                 <div>
-                    <p>{{ email.body }}</p>
+                    <div v-if="email.content_type === 'html'" v-html="email.body"></div>
+                    <div v-else>
+                        <pre>{{ email.body }}</pre>
+                    </div>
                 </div>
 
                 <div v-if="email.attachments && email.attachments.length > 0" class="attachments">
@@ -59,13 +69,15 @@
                                 <!-- Hover Icons -->
                                 <div class="overlay">
                                     <!-- View Icon -->
-                                    <svg @click="viewAttachment(attachment)" xmlns="http://www.w3.org/2000/svg"
+                                    <!-- <svg @click="viewAttachment(attachment)" xmlns="http://www.w3.org/2000/svg"
                                         class="h-6 w-6 text-white cursor-pointer hover:text-gray-300" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M15 10l4.55-4.55a9 9 0 1 0 4.55 4.55L15 10z" />
                                         <circle cx="12" cy="12" r="3" />
-                                    </svg>
+                                    </svg> -->
+                                    <EyeIcon style="cursor: pointer; color:white;" class="h-5 w-5 mx-2"
+                                        @click="viewAttachment(attachment)" />
                                     <!-- Download Icon -->
                                     <svg @click="downloadAttachment(attachment)" xmlns="http://www.w3.org/2000/svg"
                                         class="h-6 w-6 text-white cursor-pointer hover:text-gray-300" fill="none"
@@ -120,7 +132,7 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { EnvelopeIcon, TrashIcon, ArchiveBoxIcon, StarIcon } from '@heroicons/vue/24/outline';
+import { EnvelopeIcon, TrashIcon, ArchiveBoxIcon, StarIcon, EyeIcon } from '@heroicons/vue/24/outline';
 
 
 
@@ -146,7 +158,8 @@ export default {
         EnvelopeIcon,
         TrashIcon,
         ArchiveBoxIcon,
-        StarIcon
+        StarIcon,
+        EyeIcon
     },
 
     mounted() {
@@ -177,20 +190,28 @@ export default {
             window.open(url, '_blank');
         },
 
-        // Download the attachment
         downloadAttachment(attachment) {
-            // alert('df');
-            const url = this.getAttachmentUrl(attachment);
-            const link = document.createElement('a');
-            // console.log(link);
+            const url = `${apiUrl}download/${encodeURIComponent(attachment)}`;
 
-            link.href = url;
-            link.download = this.getFileName(attachment);
-            link.click();
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = attachment.split('/').pop(); // Extract filename
+                    link.click();
+                    window.URL.revokeObjectURL(link.href); // Cleanup
+                })
+                .catch(error => console.error('Fetch error:', error));
         },
 
         getAttachmentUrl(attachment) {
-            return `${appUrl}storage/${attachment}`;
+            return `${appUrl}${attachment}`;
         },
 
         getFileName(attachment) {
@@ -401,18 +422,22 @@ button {
 }
 
 .overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem; /* Space between icons */
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-  opacity: 0; /* Hidden by default */
-  transition: opacity 0.3s ease; /* Smooth fade-in effect */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    /* Space between icons */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent black overlay */
+    opacity: 0;
+    /* Hidden by default */
+    transition: opacity 0.3s ease;
+    /* Smooth fade-in effect */
 }
 
 .attachment-preview:hover .overlay {
@@ -431,15 +456,16 @@ svg:hover {
 }
 
 @media (max-width: 698px) {
-  .display{
-    display: flex;
-    flex-direction: column;
-    gap: 0px;
-  }
-  .time{
-    font-size: 12px;
-    margin-left: 95px;
-    margin-top: -10px;
-  }
+    .display {
+        display: flex;
+        flex-direction: column;
+        gap: 0px;
+    }
+
+    .time {
+        font-size: 12px;
+        margin-left: 95px;
+        margin-top: -10px;
+    }
 }
 </style>

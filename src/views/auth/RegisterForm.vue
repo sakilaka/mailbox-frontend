@@ -1,37 +1,38 @@
 <template>
   <div class="wrapper fadeInDown">
-   <div id="formContent">
-     <img :src="HeaderLogo" class="headerLogo" alt="">
-     <br>
-     <p class="loginp" style="margin: 20px 0px; color: black">SignUp MalishaEdu MailBox!!</p>
- 
-     <!-- Loader -->
-     <div v-if="isLoading" class="loader-container">
-       <div class="loader"></div>
-     </div>
- 
-     <!-- Form -->
-     <form v-else @submit.prevent="register">
-       <input type="text" v-model="name" placeholder="Name" required />
-       <input type="email" v-model="email" placeholder="Email" required />
-       <input type="password" v-model="password" placeholder="Password" required />
-       <input type="password" v-model="password_confirmation" placeholder="Confirm Password" required />
-       <input type="submit" class="fadeIn fourth" value="Register">
-     </form>
- 
-     <div id="formFooter"> 
-       Already have an account?
-       <router-link class="underlineHover text-color" to="/">Login</router-link>
-     </div>
-   </div>
- </div>
- </template>
- 
+    <div id="formContent">
+      <img :src="HeaderLogo" class="headerLogo" alt="">
+      <br>
+      <p class="loginp" style="margin: 20px 0px; color: black">SignUp MalishaEdu MailBox!!</p>
+
+      <!-- Loader -->
+      <div v-if="isLoading" class="loader-container">
+        <div class="loader"></div>
+      </div>
+
+      <!-- Form -->
+      <form v-else @submit.prevent="register">
+        <input type="text" v-model="name" placeholder="Name" required />
+        <input type="email" v-model="email" placeholder="Email" required />
+        <input type="password" v-model="password" placeholder="Password" required />
+        <input type="password" v-model="password_confirmation" placeholder="Confirm Password" required />
+        <input type="submit" class="fadeIn fourth" value="Register">
+      </form>
+
+      <div id="formFooter">
+        Already have an account?
+        <router-link class="underlineHover text-color" to="/">Login</router-link>
+      </div>
+    </div>
+  </div>
+</template>
+
 
 <script>
 import axios from 'axios';
 import { apiUrl } from "@/globalVariable"; // Use apiUrl like in login
 import HeaderLogo from '../../../src/assets/img/1723997160_header-logo.png';
+import toastr from 'toastr';
 
 export default {
   data() {
@@ -55,7 +56,9 @@ export default {
           password_confirmation: this.password_confirmation,
         });
         localStorage.setItem('token', response.data.token);
-        this.$router.push('/'); // Redirect after successful registration
+        // this.$router.push('/profile');
+        window.location.href = '/home';
+        toastr.success('Registration and login autometic Successfull.')
       } catch (error) {
         console.error("There was an error!", error);
         alert("Registration failed! Please check your inputs.");
@@ -69,11 +72,11 @@ export default {
 
 
 <style>
-
-.text-color{
+.text-color {
   color: #0CAF60;
   text-decoration: none;
 }
+
 .loader-container {
   display: flex;
   justify-content: center;
@@ -94,9 +97,9 @@ export default {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
 }
-
 </style>

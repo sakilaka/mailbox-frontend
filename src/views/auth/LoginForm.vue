@@ -3,7 +3,7 @@
     <div id="formContent">
       <img :src="HeaderLogo" class="headerLogo" alt="">
       <br>
-      <p class="loginp" style="margin: 20px 0px; color: black">Login MalishaEdu MailBox!!</p>
+      <p class="loginp" style="margin: 20px 0px; color: black">Login MailBox!!</p>
 
       <form @submit.prevent="login">
         <!-- Loader -->
@@ -49,16 +49,25 @@ export default {
           email: this.email,
           password: this.password,
         });
-        localStorage.setItem("token", response.data.token); // Save token
+
+        const { token, is_admin } = response.data; // Destructure response data
+        localStorage.setItem("token", token); // Save token
         console.log("Token set in localStorage:", localStorage.getItem("token"));
-        window.location.href = "/profile";
+
+        // Redirect based on is_admin status
+        if (is_admin === "1") {
+          window.location.href = "/dashboard"; // Redirect admin to dashboard
+        } else {
+          window.location.href = "/home"; // Redirect non-admin to profile
+        }
       } catch (error) {
         console.error("There was an error!", error);
         alert("Login failed! Please check your credentials.");
       } finally {
-        this.isLoading = false; // Hide loader
+        this.isLoading = false;
       }
-    },
+    }
+
   },
 };
 </script>
@@ -66,14 +75,15 @@ export default {
 
 <style>
 .text-color {
-  color: #0caf60;
+  color: #0CAF60;
   text-decoration: none;
 }
 
-.headerLogo{
+.headerLogo {
   width: 100px;
   margin-top: 20px;
 }
+
 .loader-container {
   display: flex;
   justify-content: center;
@@ -94,9 +104,9 @@ export default {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
 }
-
 </style>

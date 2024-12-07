@@ -17,6 +17,6 @@ export default {
 <style scoped>
 .profile {
     display: flex;
-    height: 100vh;
+    height: 90vh;
 }
 </style>

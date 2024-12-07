@@ -1,41 +1,50 @@
 <!DOCTYPE html>
 <html lang="">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>logo-mini.ico">
-    <title><%= htmlWebpackPlugin.options.title %></title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-  </head>
 
-    <style>
-.toastr {
-  z-index: 9999; /* Ensure toastr is on top */
-}
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" href="<%= BASE_URL %>logo-mini.ico">
+  <title>Mailbox</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
-.toastr.success {
-  background-color: #2a5d23; /* Green background for success */
-  color: white;
-}
+</head>
 
-.toastr.error {
-  background-color: #d9534f; /* Red background for error */
-  color: white;
-}
+<style>
+  .toastr {
+    z-index: 9999;
+    /* Ensure toastr is on top */
+  }
 
-/* Optional: Customize toastr positioning */
-.toastr-top-right {
-  top: 20px;
-  right: 20px;
-}
-    </style>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+  .toastr.success {
+    background-color: #2a5d23;
+    /* Green background for success */
+    color: white;
+  }
+
+  .toastr.error {
+    background-color: #d9534f;
+    /* Red background for error */
+    color: white;
+  }
+
+  /* Optional: Customize toastr positioning */
+  .toastr-top-right {
+    top: 20px;
+    right: 20px;
+  }
+</style>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+        Please enable it to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+
+</body>
+
 </html>

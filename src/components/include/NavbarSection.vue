@@ -2,7 +2,10 @@
   <div class="header">
     <!-- Logo Section -->
     <div class="logo">
-      <router-link to="/profile">
+      <button v-if="isInitialized && isLoggedIn && isAdmin !== '1'" class="sidebar-toggle me-3" @click="toggleSidebar">
+        {{ isSidebarVisible ? "✖" : "☰" }}
+      </button>
+      <router-link :to="isAdmin === '1' ? '/dashboard' : '/profile'">
         <img :src="HeaderLogo" alt="Logo" />
       </router-link>
     </div>
@@ -14,7 +17,7 @@
         alt="User Avatar" @click="toggleDropdown" />
       <div v-if="showDropdown" class="dropdown">
         <button @click="logout">Logout</button>
-        <!-- <button @click="viewProfile">Your Profile</button> -->
+        <button @click="setting">Settings</button>
       </div>
     </div>
   </div>
@@ -23,9 +26,12 @@
   <div v-if="showDropdown" class="dropdown-overlay" @click="toggleDropdown"></div>
 </template>
 
-
 <script>
-import HeaderLogo from '../../../src/assets/img/1723997160_header-logo.png'
+import { eventBus } from "../../../eventBus.js";
+import HeaderLogo from "../../../src/assets/img/1723997160_header-logo.png";
+import axios from "axios";
+import { apiUrl } from "../../globalVariable.js";
+import toastr from "toastr";
 
 export default {
   data() {
@@ -33,10 +39,18 @@ export default {
       isInitialized: false,
       isLoggedIn: false,
       showDropdown: false,
-      HeaderLogo
+      HeaderLogo,
+      isAdmin: null
     };
   },
-
+  computed: {
+    isSidebarVisible() {
+      return eventBus.isSidebarVisible;
+    },
+  },
+  mounted() {
+    this.fetchUserDetails();
+  },
   created() {
     this.checkLoginStatus();
   },
@@ -44,24 +58,46 @@ export default {
     checkLoginStatus() {
       const token = localStorage.getItem("token");
       this.isLoggedIn = !!token;
-      this.isInitialized = true; // Ensure rendering only happens after initialization.
+      this.isInitialized = true;
+    },
+    async fetchUserDetails() {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`${apiUrl}user/details`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        this.isAdmin = response.data.admin;
+
+      } catch (error) {
+        toastr.error("Failed to fetch user details.");
+        // this.$router.push('/');
+      }
     },
     logout() {
       localStorage.removeItem("token");
-      this.isLoggedIn = false; // Update state immediately.
-      window.location.href = "/"; // Redirect to login page.
+      this.isLoggedIn = false;
+      window.location.href = "/";
     },
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
-      // console.log(this.showDropdown);
+    },
+    setting() {
+      this.$router.push("/settings");
+      this.showDropdown = false;
+    },
+    toggleSidebar() {
+      eventBus.toggleSidebar();
     },
   },
 };
 </script>
 
+
 <style scoped>
 .header {
-  background-color: white;
+  /* background-color: #edf5fe; */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -91,7 +127,6 @@ export default {
 .dropdown {
   position: absolute;
   top: 50px;
-  /* Adjust the dropdown to appear below the avatar */
   right: 0;
   background-color: white;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -100,7 +135,6 @@ export default {
   padding: 10px 0;
   visibility: visible;
   z-index: 1001;
-  /* Make sure the dropdown is above other elements */
 }
 
 .dropdown button {
@@ -126,9 +160,24 @@ export default {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.1);
-  /* Slight dark background */
   z-index: 1000;
-  /* Should be lower than dropdown */
   cursor: pointer;
 }
+
+.sidebar-toggle {
+  z-index: 9999;
+  font-size: 20px;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #edf5fe;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+  background-color: #dfedfd;
+}
+
+
 </style>
